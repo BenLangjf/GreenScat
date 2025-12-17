@@ -49,6 +49,7 @@ for r, name in zip([complex(i[0,0]) for i in scat], space):
 ```
 This prints some numbers:
 
+```
 Lambda System, circular dipoles, c point. Should toggle-reflect.
 WG-for, g1                (0.038461538461538325+0j)
 WG-for, g2                0j
@@ -58,6 +59,7 @@ H loss, g1                (-0.1359820733051053+0j)
 H loss, g2                (-0.1359820733051053+0j)
 V loss, g1                -0.1359820733051053j
 V loss, g2                0.1359820733051053j
+```
 
 We can see that the WG-back, g2 probability-amplitude reaches ~-0.96. Meaning a high probability that the photon is refelcted into the backward mode, with the atom moved simultaneously into the second ground state. This completes the simple example.
 
