@@ -1,13 +1,13 @@
 # GreenScat
-Green'.s function based scattering model of waveguided photons from multilevel quantum systems.
+Green's function based scattering model of waveguided photons from multilevel quantum systems.
 
-The user provides information about a multilevel quantum system (for example an atom of a specific species), and the paramters of the optical modes the system is interacting with. The program then outputs scattering coefficients, assuming the system is prepared in a ground state and a single photon is thrown in (base use). The program is specifically built to deal with "wheel like" circular polarisation in the optical modes, which gives rise to interesting effects often called "chirality". 
+The user provides information about a multilevel quantum system (for example an atom of a specific species), and the parameters of the optical modes the system is interacting with. The program then outputs scattering coefficients, assuming the system is prepared in a ground state and a single photon is thrown in (base use). The program is specifically built to able to deal with "wheel like" circular polarisation in the optical modes, which gives rise to several interesting effects often called "chirality". 
 
 If you also have the QuTiP package installed, the program can instead calculate the time evolution begining from an excited state.
 
 ## Example Use
 
-You want to look at the situation described in doi:10.1126/science.1254699. Here, a Caesium atom interacts with a waveguide that posseses a circular polarisation (wheel-like circular polarisation, not bullet like circular as occurs in free space).
+You want to look at the situation described in doi:10.1126/science.1254699. Here, a Rubidium atom interacts with a waveguide that posseses a circular polarisation (wheel-like circular polarisation, not bullet like circular as occurs in free space).
 
 Import.
 
@@ -15,7 +15,7 @@ Import.
 import MGS
 ```
 
-Settup a multilevel system. As a simple representation of a Caesium atom we will assume a "Lambda"-like energy level configuration with one excited state and two ground states. We will set the energy of the excited state to be "10" units, and that of both ground states to "0".
+Settup a multilevel system. As a simple representation of a Rubidium atom we will assume a "Lambda"-like energy level configuration with one excited state and two ground states. We will set the energy of the excited state to be 10 units, and that of both ground states to 0.
 
 ```
 S = MGS.multilevel_system([10], [0, 0])
@@ -28,7 +28,7 @@ S.add_transition( 0, 0, [1, +1j] )
 S.add_transition( 0, 1, [1, -1j] )
 ```
 
-Next, we settup the optical enviroment of the atom. In this case it is a waveguide with a circular polarisation at the atom's location. (Note again, this is wheel-like circular polarisation). The interaction strength of the waveguide modes is determined largely by the group velocity (vg) that is assumed. We also include two loss modes, allowing the atom to loose light out of the waveguide. Two loss modes are included as this allows the loss to couple to all dipoles equally, which represents a simpler and more symmetric situation than would be possible with only one loss mode. The interaction strengths of the loss modes are set to 0.2 arbitary units.
+Next, we settup the optical enviroment of the atom. In this case it is a waveguide with a circular polarisation at the atom's location. (Note again, this is wheel-like circular polarisation). The interaction strength of the waveguide modes is determined largely by the group velocity (vg) that is assumed. We also include two loss modes, allowing the atom to loose light out of the waveguide. Two loss modes are included as this allows the loss to couple to all dipoles equally, which represents a more symmetric situation than would be possible with only one loss mode. The interaction strengths of the loss modes are set to 0.2 arbitary units.
 
 ```
 vg = 0.1
