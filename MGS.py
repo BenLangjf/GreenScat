@@ -94,6 +94,7 @@ def draw_ellipse( Ex, Ey, centre = [0, 0], ax = "none", scale=0.8, norm=True, co
     ax.arrow( centre[0] + Xvals[-2], centre[1] + Yvals[-2], Xvals[-1] - Xvals[-2], Yvals[-1] - Yvals[-2], 
              shape='full', lw=0, length_includes_head=True, head_width=.25*scale, color = color)
 
+
 class WG_Greens_function:
     "Waveguide Greens Function Class"
     # This class is a representation of the greens function of a waveguide.
@@ -102,7 +103,7 @@ class WG_Greens_function:
     def __init__(self, polarisation_list = [[1, 1j]], mag_list = [1], names = [] ):
         # Initialised using 2D vector for the polarisation of the WG at the atom location.
         # and the group velocity (in units of c).
-        # zeta (for a WG mode) is: zeta = a / (2*vg)
+        # mag (for a WG mode) is: mag = a / (2*vg)
         # For non WG modes put other zetas.
         
         self.G_list = []
@@ -184,7 +185,7 @@ class multilevel_system:
         self.grd_ens = grd_ens
         
         
-    def add_transition( self, en, gn, dipole, normalise = True, omega_scale = False ):
+    def add_transition( self, en, gn, dipole, normalise = True ):
         """
         Add a new dipole allowed transition.
 
@@ -198,25 +199,12 @@ class multilevel_system:
             The dipole of the transition.
         normalise : bool
             If true, the dipole is normalised to unit length.
-        omega_scale : bool
-            If true, the dipole magnitude is scaled by sqrt(omega)
         """
         
         # Normalise dipole vector to length 1.
         if normalise:
             dipole = dipole / np.linalg.norm( dipole )
-            
-        # In a waveguide, coupling strength is proportional to sqrt(omega)
-        # (In other types of optical mode its proportional to other functions of omega)
-        # If desired, this can be accoutned for by scaling the dipole scale by sqrt(omega)
-        # Note that, if this is used in a scattering problem where the input photon
-        # is significantly deturned from the transition then its not exactly right, 
-        # as the photon frequency should be used. However, for strongly detuned photons,
-        # the interaction strength is near zero anyway, so ultimately I don't 
-        # beleive the approximation posses any issue.
         
-        if omega_scale:
-            dipole = dipole * np.sqrt( self.ext_ens[en] - self.grd_ens[gn] )
         
         self.dipoles[en][gn] = np.matrix( dipole )
         
@@ -243,6 +231,11 @@ class multilevel_system:
                 for i in range( esize ):
                     j = gsize*j1 + j2
                     
+                    # In a waveguide mode, coupling strength is proportional to omega
+                    # (In other types of optical mode its proportional to other functions of omega)
+                    # This is NOT accounted for in the model, all transitions are scaled as if the 
+                    # coupling strength had no omega dependence.
+
                     # .item() converts 1x1 matrix into complex scalar.
                     out_mat[i, j] = ( Greens.E_list[ j1 ] * self.dipoles[i][j2].H ).item() # d* dot E
                     
@@ -256,7 +249,7 @@ class multilevel_system:
         (Opposite of fanout)
         """
         
-        M_out, in_out, out_out = self.fanout(Greens)
+        M_out, in_out, out_out = self.fanout( Greens )
         
         # Hermitian Conjugate of fanout, and swap in and out.
         return M_out.H, out_out, in_out
@@ -337,7 +330,7 @@ class multilevel_system:
                     
         return outlist
     
-    def inner(self, Greens_funct):
+    def inner( self, Greens_funct ):
         """
         Calculates the coupling matrix between the excited states.
         Each element of this matrix gives the total (complex) coupling
@@ -418,6 +411,7 @@ class multilevel_system:
                 out_mat[i, j] = ( self.dipoles[i][n1] * 0.5 * Greens_funct.E_list[G_n1].H *  
                                     Greens_funct.E_list[G_n2] * self.dipoles[j][n2].H ).item()
         
+        
         return np.matrix(out_mat)
     
     
@@ -488,9 +482,6 @@ class multilevel_system:
 #     return S_Out
     
 
-# Note, that for scattering I am currently asusmign all ground states degenerate.
-# I can do better than that.
-
 
 def long_photon_scattering_matrix( G, S, freq = 1.0 ):
     """
@@ -518,9 +509,9 @@ def long_photon_scattering_matrix( G, S, freq = 1.0 ):
     Ground_energy_krondelta = np.kron( np.ones((E_modes,E_modes)), S.ground_manifolds() )
     
     Gamma = S.inner( G )
-    
     fout, inspace, outspace = S.fanout( G )
     fin  = S.fanin( G )[0]
+
     
     # The detuning for each unique ground state energy.
     Det_list = S.detuning_mat( freq )

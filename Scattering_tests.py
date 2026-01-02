@@ -344,3 +344,25 @@ for r, name in zip([complex(i[0,0]) for i in scat], space):
     
 print("Norm = ", np.linalg.norm( np.array(scat) ), "\n" )
 # T12 Ended
+
+
+#%% lambda system, circle dipole c point.
+# Results in "toggle swtitch" (see doi:10.1126/science.1254699)
+# Trying again, with large non-degeneracy of ground states.
+
+G = WG_Greens_function( [[1, 1j]], [mag], ["WG"])
+G.add_mode( [1, 0], 0.1, False, "H loss" )
+G.add_mode( [0, 1], 0.1, False, "V loss" )
+
+S = multilevel_system([11], [0, 10])
+S.add_transition( 0, 0, [1, +1j] )
+S.add_transition( 0, 1, [1, -1j] )
+
+scat, space = long_photon_scattering(G, S, [1, 0], [1, 0, 0, 0], freq=11 )
+
+print('Lambda System, circular dipoles, c point. Large non-degeneracy.')
+for r, name in zip([complex(i[0,0]) for i in scat], space):
+    print( name, " " * (24-len(name)), r)
+    
+print("Norm = ", np.linalg.norm( np.array(scat) ), "\n" )
+## T4 ended

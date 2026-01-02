@@ -340,3 +340,36 @@ print('trace 2', total_density_over_time_2.tr() )
 print('Overlap from Fiedlity', fidelity(total_density_over_time_1,total_density_over_time_2)**2 )
 print('Overlap from Tr_dist', (1 - tracedist(total_density_over_time_1,total_density_over_time_2)**2) )
 print('Expected overlap', fidelity(res1.states[0], res2.states[0])**2, (1 - tracedist(res1.states[0], res2.states[0])**2) )
+
+
+
+# %% Highly non-degenerate ground states test
+
+G = WG_Greens_function( [[1, 1]], [mag], ["WG"])
+
+S = multilevel_system([1000], [0, 999])
+S.add_transition( 0, 0, [1, 0] )
+S.add_transition( 0, 1, [0, 1] )
+
+_, labs_g, labs_e = S.fanout( G )
+full_labs = labs_e + labs_g
+
+H_size = len(full_labs)
+
+L, H = decay_from_excited_state( G, S )
+res = mesolve(L, basis(H_size, 0), np.linspace(0, 3, 300))
+
+c = 'rgkbyc' * 5
+
+fig, ax = plt.subplots(figsize = (5,5))
+
+for n in range(H_size):
+    
+    ax.plot( np.linspace(0, 3, 300), [complex(op[n,n]) for op in res.states]
+            , c[n] + 'x', label=full_labs[n] )
+ax.legend()
+ax.set_xlim([0, 3])
+ax.set_ylim([0, 1])
+
+
+
